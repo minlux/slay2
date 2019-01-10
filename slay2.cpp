@@ -2,6 +2,46 @@
 /*!
    \file
    \brief Serial Layer 2 Protocol.
+
+   To synchronice transmitter and receiver in respect to the next expected sequence number,
+   each endpoint sends an SYNC sequence at stratup. A SYNC sequence consists of 5 consecutive
+   SYNC bytes:
+
+   SLAY2_SYNC (0x2C)
+      +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
+      | 0 | 0 | 1 | 0 | 1 | 1 | 0 | 0 |
+      +---+---+---+---+---+---+---+---+
+
+
+   DATA and ACK is transfered in frames. Frames are terminated with a final
+   byte:
+
+   SLAY2_END_OF_ACK (0x1)
+      +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
+      | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+      +---+---+---+---+---+---+---+---+
+   SLAY2_END_OF_DATA (0x2)
+      +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
+      | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+      +---+---+---+---+---+---+---+---+
+
+
+   DATA is encoded into a byte stream. Each byte of DATA stream contains
+   7 payload bits. Such bytes has bit[7] = [1], bit[6:0] = [DDDDDDD].
+
+   DATA
+      +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
+      | 1 | D | D | D | D | D | D | D |
+      +---+---+---+---+---+---+---+---+
+
+
+   Acknowledgment ACK is also encoded into a byte stream. Each byte of ACK
+   stream contains 6 payload bits. Such bytes has bit[7:6] = [01], bit[5:0] = [AAAAAA].
+
+   ACK
+      +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
+      | 0 | 1 | A | A | A | A | A | A |
+      +---+---+---+---+---+---+---+---+
 */
 //-----------------------------------------------------------------------------
 
@@ -12,6 +52,8 @@
 
 /* -- Defines ------------------------------------------------------------- */
 // using namespace std;
+
+#define SLAY2_SYNC            (0x2C)  //a bit pattern with a "special" 0-1 sequence that is considered robust against inteferences
 
 
 /* -- Types --------------------------------------------------------------- */

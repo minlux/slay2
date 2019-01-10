@@ -15,6 +15,9 @@ The protocol driver is realized as virtual C++ class **Slay2**. For target adapt
 class and implement the virtual methods:
 
 ```
+class Slay2
+{
+   ...
    virtual unsigned long getTime1ms(void) = 0;
    virtual unsigned int getTxCount(void) = 0;
    virtual int transmit(const unsigned char * data, unsigned int len) = 0;
@@ -33,6 +36,9 @@ The actual communication takes place by means of **Slay2Channel**, using its *se
 *receive callback*:
 
 ```
+class Slay2Channel
+{
+   ...
    int send(const unsigned char * data, const unsigned int len, const bool more=false);
    void setReceiver(const Slay2Receiver receiver, void * const obj=NULL);
 ```
@@ -43,7 +49,7 @@ The actual communication takes place by means of **Slay2Channel**, using its *se
 ```
 //main.cpp
 #include "slay2.h"
-#include "slay2linux.h"             //Slay2Linux is a target adaption of slay2 for Linux
+#include "slay2_linux.h"            //Slay2Linux is a target adaption of slay2 for Linux
 
 ...
 
@@ -113,14 +119,23 @@ Some details of the project structure.
 - slay2_linux.cpp/.h (target implementation for linux)
 
 ### Test and Demo
-- slay2_buffer_test.cpp (this is a seperate "main" that only tests the buffer implementation)
-- main.cpp (this is demo application using the *nullmodem target*)
+- slay2_buffer_test.cpp (this is a separate "main" that only tests the buffer implementation)
+- main.cpp (this is a demo application using the *nullmodem target*)
 
 
-## How to build
-Build process is based on CMake.
+## Usage
+To use *slay2* add the *base* files to your project. Also add one of the provided targed adaptions
+or implement your own.
 
-1. Create a build directory (e.g. `mkdir build`)
-2. Within the build directory execute `cmake ..`
-3. Within the build directory execute `make`
+
+## Build demo
+Build process of the demo application is based on CMake.
+On a linux computer follow this procedure:
+
+1. Checkout this project and *cd* to it (e.g. `cd slay2`)
+2. Create a build directory (e.g. `mkdir build`)
+3. Enter the build directory (e.g. `cd build`)
+4. Within the build directory execute `cmake ..`
+5. Within the build directory execute `make`
+6. Execute the demo usin `./slay2`
 

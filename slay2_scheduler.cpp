@@ -2,6 +2,24 @@
 /*!
    \file
    \brief Serial Layer 2 Protocol, Scheduler.
+
+   ACK and DATA frames contains 0..N payload bytes, and a final 32-bit CRC.
+   - ACK frames has only one payload byte, the sequence number of the DATA frame,
+     that shall be acknowledged.
+   - DATA frames has 3 .. 256 payload bytes:
+     -- 1st byte: sequence number of the frame
+     -- 2nd byte: number of the logical communication channel (0..255)
+     -- 3rd .. (N-4)th: payload data sent through the communication channel
+     -- (N-3) .. (N)th: 32-bit CRC of the frame (big endian)
+
+   DATA-FRAME
+      +----+----+--------------------------------------------------------------+-------+
+      |SEQ | CH |                           PAYLOAD                            | CRC32 |
+      +----+----+--------------------------------------------------------------+-------+
+   ACK-FRAME
+      +----+-------+
+      |SEQ | CRC32 |
+      +----+-------+
 */
 //-----------------------------------------------------------------------------
 

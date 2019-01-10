@@ -20,7 +20,8 @@
 #define SLAY2_FIFO_SIZE       (1024)
 
 
-#define SLAY2_SYNC            (0x2C)  //a bit pattern with a "special" 0-1 sequence that is considered robust against inteferences
+// #define SLAY2_ACK_ID    (0x40)      //bit[7:6] = 0b01, bit[5:0] = xxx
+// #define SLAY2_DATA_ID   (0x80)      //bit[7] = 0b1, bit[6:0] = xxx
 #define SLAY2_END_OF_ACK      (1)
 #define SLAY2_END_OF_DATA     (2)
 

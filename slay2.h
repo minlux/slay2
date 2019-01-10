@@ -13,7 +13,7 @@
 #include "slay2_scheduler.h"
 
 /* -- Defines ------------------------------------------------------------- */
-#define SLAY2_NUM_CHANNELS    (8)
+#define SLAY2_NUM_CHANNELS    (8) //up to 256 channels are possible
 
 /* -- Types --------------------------------------------------------------- */
 typedef void (*Slay2Receiver)(void * const obj, const unsigned char * const data, const unsigned int len);
@@ -26,21 +26,21 @@ class Slay2
 {
 public:
    Slay2();
-   ~Slay2();
-   void task(void);
+   ~Slay2();        //this also delets all open channels
+   void task(void); //must be called cyclically
 
-   Slay2Channel * open(const unsigned int channel);
-   void close(Slay2Channel * const channel);
+   Slay2Channel * open(const unsigned int channel); //returns NULL, if channel number of of range, or channel is already open
+   void close(Slay2Channel * const channel); //this deletes the object pointed by channel
 
    //this function must be implemented (in a derived class)
-   virtual unsigned long getTime1ms(void) = 0; //utility function. probably others can utilize it too
+   virtual unsigned long getTime1ms(void) = 0; //public utility function. probably others can utilize it too
 
 protected:
    //this functions must be implemented (in a derived class) to connect to a hardware/plattform...
-   virtual unsigned int getTxCount(void) = 0;
-   virtual int transmit(const unsigned char * data, unsigned int len) = 0;
-   //virtual unsigned int getRxCount(void) = 0;
-   virtual int receive(unsigned char * buffer, unsigned int size) = 0;
+   virtual unsigned int getTxCount(void) = 0; //return number of bytes in TX buffer
+   virtual int transmit(const unsigned char * data, unsigned int len) = 0; //return number of written bytes
+   //virtual unsigned int getRxCount(void) = 0; //return number of bytes in RX buffer
+   virtual int receive(unsigned char * buffer, unsigned int size) = 0; //return number of read bytes
 
 private:
    void doReception(void);
@@ -67,7 +67,7 @@ public:
    int send(const unsigned char * data, const unsigned int len, const bool more=false);
 
 private:
-   //private constructor and destructor to prevent user from dynamic creaton/deletion of Slay2ch objects
+   //private constructor to prevent user from dynamic creaton of Slay2Channel objects (Slay2.open shall be used therefore)
    Slay2Channel(const unsigned int channel);
    unsigned int channel;
    Slay2Receiver receiver;
