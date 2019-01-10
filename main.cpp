@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include "slay2.h"
-#include "slay2_linux.h"
+#include "slay2_nullmodem.h"
 
 using namespace std;
 
@@ -25,7 +25,7 @@ sunt in culpa qui officia deserunt mollit anim id est laborum.";
 static unsigned int dummyCrc;
 
 
-static Slay2Linux slay2;    //serial layer 2 protocol driver
+static Slay2Nullmodem slay2;    //serial layer 2 protocol driver
 static Slay2Channel * ser[APP_CH_CNT]; //serial communication channels
 static unsigned int rxCrc[APP_CH_CNT];
 

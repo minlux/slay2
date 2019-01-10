@@ -9,6 +9,7 @@ retransmitted.
 *slay2* offers up to 256 logical communication channels. The lower the channel number, the higher the transfer
 priority.
 
+
 ## Concept
 The protocol driver is realized as virtual C++ class **Slay2**. For target adaption, user must derive from this
 class and implement the virtual methods:
@@ -20,7 +21,7 @@ class and implement the virtual methods:
    virtual int receive(unsigned char * buffer, unsigned int size) = 0;
 ```
 
-**Slay2** surfs as factory class to open (create) resp. close (destroy) communication channels of
+**Slay2** serves as factory class to open (create) / close (destroy) communication channels of
 type **Slay2Channel**:
 
 ```
@@ -28,8 +29,8 @@ type **Slay2Channel**:
    void close(Slay2Channel * const channel);
 ```
 
-The actual communication takes place by means of **Slay2Channel**, using its send method and
-receive callback:
+The actual communication takes place by means of **Slay2Channel**, using its *send* method and
+*receive callback*:
 
 ```
    int send(const unsigned char * data, const unsigned int len, const bool more=false);
@@ -40,6 +41,12 @@ receive callback:
 ## Application Example
 
 ```
+//main.cpp
+#include "slay2.h"
+#include "slay2linux.h"             //Slay2Linux is a target adaption of slay2 for Linux
+
+...
+
 static Slay2Linux slay2;            //Slay2Linux is a child of Slay2 (e.g. Slay2Linux : public Slay2 ...)
 static Slay2Channel * slay2ch[3];   //3 logical slay2 communication channels
 
@@ -76,9 +83,6 @@ int main(int argc, char * argv[])
    slay2ch[2]->setReceiver(&anotherOnSerialReceive); //obj will be NULL, because of default parameter
 
 
-   //send data
-   slay2[...]->send((const unsigned char *)"123 transmit data", 18);
-
    //enter application loop
    while (true)
    {
@@ -92,7 +96,25 @@ int main(int argc, char * argv[])
       //process communication
       slay2.task(); //this method must be called cyclically
    }
+
+   ...
 ```
+
+## Driver Files
+Some details of the project structure.
+
+###Base
+- slay2.cpp/.h
+- slay2_buffer.cpp/.h
+- slay2_scheduler.cpp./h
+
+###Target Adaptions
+- slay2_nullmodem.cpp/.h (this is an dummy target implementation interconnecting TX an RX (like a nullmode cable does))
+- slay2_linux.cpp/.h (target implementation for linux)
+
+###Test and Demo
+- slay2_buffer_test.cpp (this is a seperate "main" that only tests the buffer implementation)
+- main.cpp (this is demo application using the *nullmodem target*)
 
 
 ## How to build
