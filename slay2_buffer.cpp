@@ -2,6 +2,10 @@
 /*!
    \file
    \brief Serial Layer 2 Protocol. Different types of buffers.
+
+   Encode DATA or ACK bytes into a respective DATA or ACK stream.
+   Decode DATA or ACK stream and extract the respective DATA or ACK bytes.
+   In parallel calculate chcksum of encoded or decoded DATA resp. ACK bytes.
 */
 //-----------------------------------------------------------------------------
 

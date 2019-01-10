@@ -42,6 +42,37 @@
       +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
       | 0 | 1 | A | A | A | A | A | A |
       +---+---+---+---+---+---+---+---+
+
+
+
+
+   Transmission is done in units of "frames":
+
+   DATA-FRAME
+      +----+----+-------------------------------------------------------------+-------+
+      |SEQ | CH |                        PAYLOAD                              | CRC32 |
+      +----+----+-------------------------------------------------------------+-------+
+
+   Assembly of DATA frames:
+     -- 1st byte: sequence number of the frame
+     -- 2nd byte: communication hannel number
+     -- next-N bytes: Up to 256 payload data bytes (sent through the communication channel)
+     -- final 4 bytes: 32-bit CRC of the entire frame (big endian)
+
+
+   ACK-FRAME
+      +-----+-------+
+      | SEQ | CRC32 |
+      +-----+-------+
+
+   Assembly of ACK frames:
+     -- 1st byte: sequence number of the frame
+     -- final 4 bytes: 32-bit CRC of the entire frame (big endian)
+
+
+    Note:
+    For transmission, these frames are encoded and terminated with an end-of-ack resp. end-of-data byte.
+
 */
 //-----------------------------------------------------------------------------
 
