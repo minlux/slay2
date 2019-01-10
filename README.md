@@ -103,16 +103,16 @@ int main(int argc, char * argv[])
 ## Driver Files
 Some details of the project structure.
 
-###Base
+### Base
 - slay2.cpp/.h
 - slay2_buffer.cpp/.h
 - slay2_scheduler.cpp./h
 
-###Target Adaptions
+### Target Adaptions
 - slay2_nullmodem.cpp/.h (this is an dummy target implementation interconnecting TX an RX (like a nullmode cable does))
 - slay2_linux.cpp/.h (target implementation for linux)
 
-###Test and Demo
+### Test and Demo
 - slay2_buffer_test.cpp (this is a seperate "main" that only tests the buffer implementation)
 - main.cpp (this is demo application using the *nullmodem target*)
 
