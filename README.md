@@ -18,7 +18,7 @@ class and implement the virtual methods:
 class Slay2
 {
    ...
-   virtual unsigned long getTime1ms(void) = 0;
+   virtual unsigned int getTime1ms(void) = 0;
    virtual unsigned int getTxCount(void) = 0;
    virtual int transmit(const unsigned char * data, unsigned int len) = 0;
    virtual int receive(unsigned char * buffer, unsigned int size) = 0;

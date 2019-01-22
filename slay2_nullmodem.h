@@ -16,16 +16,20 @@
 class Slay2Nullmodem : public Slay2
 {
 public:
-   void init(const char * dev);
+   bool init(void);
    void shutdown(void);
 
-   unsigned long getTime1ms(void);
+   unsigned int getTime1ms(void);
 
-protected:
+protected: //only for testing purpose, the following functions shall be public
    unsigned int getTxCount(void);
    int transmit(const unsigned char * data, unsigned int len);
    unsigned int getRxCount(void);
    int receive(unsigned char * buffer, unsigned int size);
+
+private:
+   static unsigned int time1ms; //time is common for all instances
+   Slay2Fifo fifo;
 };
 
 

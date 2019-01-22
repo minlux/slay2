@@ -209,11 +209,18 @@ void Slay2::doReception(void)
                txScheduler.scheduleAck(seqNr);
                if (seqNr == nextExpRxSeqNr)
                {
-                  const unsigned char channel = dataBuffer[1];
-                  Slay2Receiver receiver = channels[channel]->receiver;
-                  if (receiver != NULL)
+                  const unsigned char ch = dataBuffer[1];
+                  if (ch < SLAY2_NUM_CHANNELS)
                   {
-                     receiver(channels[channel]->receiverObj, &dataBuffer[2], dataLen - 6);
+                     Slay2Channel * const channel = channels[ch];
+                     if (channel != NULL)
+                     {
+                        Slay2Receiver receiver = channel->receiver;
+                        if (receiver != NULL)
+                        {
+                           receiver(channel->receiverObj, &dataBuffer[2], dataLen - 6);
+                        }
+                     }
                   }
                   ++nextExpRxSeqNr;
                }
@@ -232,7 +239,7 @@ void Slay2::doTransmission(void)
 {
    if (getTxCount() <= 24) //if less/equal than 24 chars in TX buffer -> add another frame (Note: 24 ^= 3 ACK frames)
    {
-      const unsigned long time1ms = getTime1ms();
+      const unsigned int time1ms = getTime1ms();
       Slay2Buffer * txBuffer = txScheduler.getNextXfer(time1ms, channels, SLAY2_NUM_CHANNELS);
       if (txBuffer != NULL)
       {

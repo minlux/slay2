@@ -33,7 +33,7 @@ public:
    void close(Slay2Channel * const channel); //this deletes the object pointed by channel
 
    //this function must be implemented (in a derived class)
-   virtual unsigned long getTime1ms(void) = 0; //public utility function. probably others can utilize it too
+   virtual unsigned int getTime1ms(void) = 0; //public utility function. probably others can utilize it too
 
 protected:
    //this functions must be implemented (in a derived class) to connect to a hardware/plattform...

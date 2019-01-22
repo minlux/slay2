@@ -20,53 +20,33 @@ using namespace std;
 /* -- Types --------------------------------------------------------------- */
 
 /* -- (Module) Global Variables ------------------------------------------- */
-static Slay2Fifo m_NullModem;
 
 /* -- Module Global Function Prototypes ----------------------------------- */
 
 /* -- Implementation ------------------------------------------------------ */
 
 
-void Slay2Nullmodem::init(const char * dev)
+bool Slay2Nullmodem::init(void)
 {
-   //todo - init tty-device "dev"
+   //nothing todo here
+   return true;
 }
 
 void Slay2Nullmodem::shutdown(void)
 {
-   //todo
+   //nothing todo here
 }
 
 
-unsigned long Slay2Nullmodem::getTime1ms(void)
+unsigned int Slay2Nullmodem::getTime1ms(void)
 {
-   static unsigned long startSecond;
-   struct timespec now;
-   unsigned long time1s;
-   unsigned long time1ms;
-
-   //get time
-   clock_gettime(CLOCK_REALTIME, &now);
-   if (startSecond == 0)
-   {
-      startSecond = now.tv_sec;
-   }
-   //calc time since startup in milliseconds
-   time1s = (now.tv_sec - startSecond);
-   time1ms = round(now.tv_nsec / 1.0e6);
-   if (time1ms > 999)
-   {
-      ++time1s;
-      time1ms = 0;
-   }
-   time1ms = 1000uL * time1s + time1ms;
-   return time1ms;
+   return time1ms++;
 }
 
 
 unsigned int Slay2Nullmodem::getTxCount(void)
 {
-   return m_NullModem.getCount();
+   return fifo.getCount();
 }
 
 int Slay2Nullmodem::transmit(const unsigned char * data, unsigned int len)
@@ -93,7 +73,7 @@ int Slay2Nullmodem::transmit(const unsigned char * data, unsigned int len)
       }
 #endif
       //push into transmitter
-      success = m_NullModem.push(c);
+      success = fifo.push(c);
       if (success == false)
       {
          break;
@@ -105,7 +85,7 @@ int Slay2Nullmodem::transmit(const unsigned char * data, unsigned int len)
 
 unsigned int Slay2Nullmodem::getRxCount(void)
 {
-   return m_NullModem.getCount();
+   return fifo.getCount();
 }
 
 int Slay2Nullmodem::receive(unsigned char * buffer, unsigned int size)
@@ -113,7 +93,7 @@ int Slay2Nullmodem::receive(unsigned char * buffer, unsigned int size)
    int count = 0;
    int c;
    //read data
-   while ((size-- > 0) && ((c = m_NullModem.pop()) >= 0))
+   while ((size-- > 0) && ((c = fifo.pop()) >= 0))
    {
       *buffer++ = (unsigned char)c;
       ++count;

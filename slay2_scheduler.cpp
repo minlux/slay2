@@ -50,7 +50,7 @@ void Slay2TxScheduler::reset(void)
 // 1. ACK frames
 // 2. Retransmission of out-timed frames
 // 3. New data frames
-Slay2Buffer * Slay2TxScheduler::getNextXfer(const unsigned long time1ms,
+Slay2Buffer * Slay2TxScheduler::getNextXfer(const unsigned int time1ms,
                                             Slay2Channel * channels[], const unsigned int channelCount)
 {
    //any ack frame to be transmitted?
@@ -73,14 +73,15 @@ Slay2Buffer * Slay2TxScheduler::getNextXfer(const unsigned long time1ms,
    //any pending data frames in fifo to be retransmitted because of timeout
    if (dataFifoCount > 0)
    {
-      const unsigned int timeout1ms = dataFifoTimeout[0]; //the oldest one, is expect to be acknowledged first
-      if (time1ms > timeout1ms)
+      //the oldest one, is expect to be acknowledged first
+      if ((time1ms - dataFifoTimeout[0][0]) > dataFifoTimeout[0][1]) //does (currentTime - transmissionTime) exceed the transmission timeout?
       {
          Slay2Buffer * next = dataFifo[0];
          // cout << "--> RTX: DATA "
          //      << (unsigned int)Slay2DataDecodingBuffer::decodeData(next->getBuffer(), 0)
          //      << endl;
-         dataFifoTimeout[0] = time1ms + 60; //transmission of 300 bytes (max length of a data frame) takes ~27ms at 115k, 8N1
+         dataFifoTimeout[0][0] = time1ms; //store timestamp of new transmission
+         dataFifoTimeout[0][1] =  60; //set transmission timeout: transmission of 300 bytes (max length of a data frame) takes ~27ms at 115k, 8N1
                                             //timeout is 27ms for transmission
                                             //         + 27ms for to complete a ongoing transmission on the "reply channel"
                                             //         +  6ms generous timeout for the reply of the ACK frame
@@ -138,8 +139,8 @@ Slay2Buffer * Slay2TxScheduler::getNextXfer(const unsigned long time1ms,
             //5. at the time the receiver receives this data frame, its tx fifo may contain ~325 output bytes (worst cast) -> offset of ~300ms
             //6. transmission of an ack frame takes about 1ms
             //7. receiver may need some time to preocess the input and answer with an ack -> offset 2ms
-            unsigned long timeout1ms = 3 + (count / 10) + 30 + 1 + 2; //rule4 + rule2 + rule5 + rule6 + rule7
-            dataFifoTimeout[dataFifoCount] = time1ms + timeout1ms;
+            dataFifoTimeout[dataFifoCount][0] = time1ms;
+            dataFifoTimeout[dataFifoCount][1] = 3 + (count / 10) + 30 + 1 + 2; //rule4 + rule2 + rule5 + rule6 + rule7
             ++dataFifoCount;
             return data;
          }
@@ -163,15 +164,17 @@ bool Slay2TxScheduler::acknowledgeXfer(const unsigned char seqNr)
          //      << (unsigned int)seqNr
          //      << endl << endl;
 
-         //yes -> flush buffer and "shuffle/pop" fifo
+         //yes -> flush buffer and "rotate/pop" fifo
          data->flush();
          for (int i = 0; i < SLAY2_SCHEDULER_FIFO_DEPTH - 1; ++i)
          {
             dataFifo[i] = dataFifo[i+1];
-            dataFifoTimeout[i] = dataFifoTimeout[i+1];
+            dataFifoTimeout[i][0] = dataFifoTimeout[i+1][0];
+            dataFifoTimeout[i][1] = dataFifoTimeout[i+1][1];
          }
          dataFifo[SLAY2_SCHEDULER_FIFO_DEPTH - 1] = data;
-         dataFifoTimeout[SLAY2_SCHEDULER_FIFO_DEPTH - 1] = 0;
+         dataFifoTimeout[SLAY2_SCHEDULER_FIFO_DEPTH - 1][0] = 0;
+         dataFifoTimeout[SLAY2_SCHEDULER_FIFO_DEPTH - 1][1] = 0;
          --dataFifoCount;
          nackCount = 0;
          return true;

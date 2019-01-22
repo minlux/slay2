@@ -49,7 +49,7 @@ static void on_serial_receive(void * const obj, const unsigned char * const data
 int main(int argc, char * argv[])
 {
    //init random number generator
-   const unsigned int seed = (unsigned int)slay2.getTime1ms();
+   const unsigned int seed = slay2.getTime1ms();
    cout << "Init with seed=" << seed << endl;
    srand(seed);
 
@@ -69,7 +69,7 @@ int main(int argc, char * argv[])
    }
 
    //start test loop
-   unsigned long start = slay2.getTime1ms();
+   unsigned int start = slay2.getTime1ms();
    for (int test = 0; test < APP_TEST_CNT; ++test)
    {
       //init crc
@@ -81,8 +81,8 @@ int main(int argc, char * argv[])
          slay2.task();
       }
    }
-   unsigned long stop = slay2.getTime1ms();
-   const unsigned int dauer = (unsigned int)(stop - start);
+   unsigned int stop = slay2.getTime1ms();
+   const unsigned int dauer = stop - start;
    cout << "Uebertragungsdauer [ms]: " << dauer << endl;
    cout << "Uebertragungsgeschw [kbps]: " << (1.0*APP_TEST_CNT*dummyLen*(APP_CH_CNT-1))/dauer << endl;
 

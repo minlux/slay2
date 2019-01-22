@@ -23,7 +23,7 @@ class Slay2TxScheduler
 public:
    Slay2TxScheduler();
    void reset(void);
-   Slay2Buffer * getNextXfer(const unsigned long time1ms,
+   Slay2Buffer * getNextXfer(const unsigned int time1ms,
                              Slay2Channel * channels[], const unsigned int channelCount);
    bool acknowledgeXfer(const unsigned char seqNr);
    bool scheduleAck(const unsigned char seqNr);
@@ -32,7 +32,7 @@ public:
 private:
    Slay2DataEncodingBuffer _dataBuffer[SLAY2_SCHEDULER_FIFO_DEPTH];
    Slay2DataEncodingBuffer * dataFifo[SLAY2_SCHEDULER_FIFO_DEPTH];
-   unsigned long dataFifoTimeout[SLAY2_SCHEDULER_FIFO_DEPTH];
+   unsigned int dataFifoTimeout[SLAY2_SCHEDULER_FIFO_DEPTH][2];
    unsigned int dataFifoCount; //number of valid entries in the fifo
    Slay2AckEncodingBuffer _ackBuffer[SLAY2_SCHEDULER_FIFO_DEPTH];
    Slay2AckEncodingBuffer * ackFifo[SLAY2_SCHEDULER_FIFO_DEPTH];
