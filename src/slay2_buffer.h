@@ -115,8 +115,11 @@ class Slay2Fifo
 public:
    Slay2Fifo();
    unsigned int getCount();
+   unsigned int getSpace();
    bool push(unsigned char c);
    int pop();
+   void flush();
+
 
 private:
    unsigned char buffer[SLAY2_FIFO_SIZE];

@@ -77,12 +77,12 @@
 //-----------------------------------------------------------------------------
 
 /* -- Includes ------------------------------------------------------------ */
-// #include <iostream>
+#include <iostream>
 #include "slay2.h"
 
 
 /* -- Defines ------------------------------------------------------------- */
-// using namespace std;
+using namespace std;
 
 #define SLAY2_SYNC            (0x2C)  //a bit pattern with a "special" 0-1 sequence that is considered robust against inteferences
 
@@ -105,6 +105,7 @@ Slay2::Slay2()
    syncSent = false;
    syncCount = 0;
    nextExpRxSeqNr = 0;
+   verbose = false;
 }
 
 
@@ -129,6 +130,7 @@ void Slay2::task(void)
    if (syncSent == false)
    {
       const unsigned char syncSequence[5] = { SLAY2_SYNC, SLAY2_SYNC, SLAY2_SYNC, SLAY2_SYNC, SLAY2_SYNC };
+      if (verbose) cout << "SLAY2: Sending 5x SYNC" << endl;
       if (transmit(syncSequence, 5) >= 5) //send 5 sync chars to get in synchronisation with the remote endpoint
       {
          txScheduler.reset();
@@ -143,6 +145,12 @@ void Slay2::task(void)
 }
 
 
+void Slay2::setVerbose(void)
+{
+   verbose = true;
+}
+
+
 void Slay2::doReception(void)
 {
    unsigned char rxBuffer;
@@ -152,8 +160,10 @@ void Slay2::doReception(void)
       if (rxBuffer == SLAY2_SYNC)
       {
          ++syncCount;
+         if (verbose) cout << "SLAY2: SYNC received" << endl;
          if (syncCount >= 3)
          {
+            if (verbose) cout << "SLAY2: reset for synchronisation" << endl;
             syncCount = 0;
             //a consecutive receive sequence of 3 or more SYNC chars, leads to clear the "receive sequence lock"
             //as a consequence of that, the receiver does not longer expects the next frame to has a sequence
@@ -177,6 +187,7 @@ void Slay2::doReception(void)
       }
       if (Slay2AckDecodingBuffer::isEndOfAck(rxBuffer))
       {
+         if (verbose) cout << "SLAY2: ACK frame finished. CRC=" << rxAckDecoder.getCrc32() << endl;
          if (rxAckDecoder.getCrc32() == 0) //CRC of valid frames is 0!
          {
             const unsigned char * ackBuffer = rxAckDecoder.getBuffer();
@@ -199,6 +210,7 @@ void Slay2::doReception(void)
       }
       if (Slay2DataDecodingBuffer::isEndOfData(rxBuffer))
       {
+         if (verbose) cout << "SLAY2: DATA frame finished. CRC=" << rxDataDecoder.getCrc32() << endl;
          if (rxDataDecoder.getCrc32() == 0) //CRC of valid frames is 0!
          {
             const unsigned char * dataBuffer = rxDataDecoder.getBuffer();
@@ -324,3 +336,18 @@ int Slay2Channel::send(const unsigned char * data, const unsigned int len, const
    return (int)count;
 }
 
+
+unsigned int Slay2Channel::getTxBufferSize()
+{
+   return SLAY2_FIFO_SIZE;
+}
+
+unsigned int Slay2Channel::getTxBufferSpace()
+{
+   return txFifo.getSpace();
+}
+
+void Slay2Channel::flushTxBuffer()
+{
+   txFifo.flush();
+}

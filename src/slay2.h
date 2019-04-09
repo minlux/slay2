@@ -28,6 +28,7 @@ public:
    Slay2();
    ~Slay2();        //this also delets all open channels
    void task(void); //must be called cyclically
+   void setVerbose(void);
 
    Slay2Channel * open(const unsigned int channel); //returns NULL, if channel number of of range, or channel is already open
    void close(Slay2Channel * const channel); //this deletes the object pointed by channel
@@ -53,6 +54,7 @@ private:
    Slay2AckDecodingBuffer rxAckDecoder;
    Slay2DataDecodingBuffer rxDataDecoder;
    unsigned char nextExpRxSeqNr;  //expected sequence number of next received data frame!
+   bool verbose;
 };
 
 
@@ -65,6 +67,10 @@ class Slay2Channel
 public:
    void setReceiver(const Slay2Receiver receiver, void * const obj=NULL);
    int send(const unsigned char * data, const unsigned int len, const bool more=false);
+   unsigned int getTxBufferSize();
+   unsigned int getTxBufferSpace();
+   void flushTxBuffer();
+
 
 private:
    //private constructor to prevent user from dynamic creaton of Slay2Channel objects (Slay2.open shall be used therefore)

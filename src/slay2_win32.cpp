@@ -28,7 +28,7 @@
 
 Slay2Win32::Slay2Win32()
 {
-   fileHandle = NULL;
+   fileHandle = INVALID_HANDLE_VALUE;
 }
 
 Slay2Win32::~Slay2Win32()
@@ -50,7 +50,7 @@ bool Slay2Win32::init(const char * serPortName)
       NULL);
 
    //configure serial settings
-   if (fileHandle != NULL)
+   if (fileHandle != INVALID_HANDLE_VALUE)
    {
       DCB dcbSerialParams = { 0 };
       COMMTIMEOUTS timeouts = { 0 };
@@ -81,7 +81,12 @@ bool Slay2Win32::init(const char * serPortName)
       SetCommState(fileHandle, &dcbSerialParams);
 
       //set timeouts
-      timeouts.ReadTotalTimeoutConstant = 0; //wait 0*100ms for ReadFile function -> do not wait -> non blocking read!
+      // Look up SetCommTimeouts and the COMMTIMEOUTS structure in the API reference.
+      // The description of the ReadIntervalTimeout structure member contains the following paragraph:
+         // A value of MAXDWORD, combined with zero values for both the  ReadTotalTimeoutConstant and
+         // ReadTotalTimeoutMultiplier members, specifies that the read operation is to return immediately with
+         // the number of characters that have already been received, even if no characters have been received.
+      timeouts.ReadIntervalTimeout = MAXDWORD;
       SetCommTimeouts(fileHandle, &timeouts);
       return true; //success
    }
@@ -93,10 +98,10 @@ bool Slay2Win32::init(const char * serPortName)
 
 void Slay2Win32::shutdown(void)
 {
-   if (fileHandle != NULL)
+   if (fileHandle != INVALID_HANDLE_VALUE)
    {
       CloseHandle(fileHandle);
-      fileHandle = NULL;
+      fileHandle = INVALID_HANDLE_VALUE;
    }
 }
 
@@ -109,10 +114,10 @@ unsigned int Slay2Win32::getTime1ms(void)
 
 unsigned int Slay2Win32::getTxCount(void)
 {
-   if (fileHandle != NULL)
+   if (fileHandle != INVALID_HANDLE_VALUE)
    {
       unsigned int success;
-      unsigned int errors;
+      unsigned long errors;
       COMSTAT status;
       //retrieve status information, using the clear comm error function
       success = ClearCommError(fileHandle, &errors, &status);
@@ -126,8 +131,8 @@ unsigned int Slay2Win32::getTxCount(void)
 
 int Slay2Win32::transmit(const unsigned char * data, unsigned int len)
 {
-   unsigned int wr = 0;
-   if (fileHandle != NULL)
+   unsigned long wr = 0;
+   if (fileHandle != INVALID_HANDLE_VALUE)
    {
       WriteFile(fileHandle, data, len, &wr, NULL);
    }
@@ -137,10 +142,10 @@ int Slay2Win32::transmit(const unsigned char * data, unsigned int len)
 
 unsigned int Slay2Win32::getRxCount(void)
 {
-   if (fileHandle != NULL)
+   if (fileHandle != INVALID_HANDLE_VALUE)
    {
       unsigned int success;
-      unsigned int errors;
+      unsigned long errors;
       COMSTAT status;
       //retrieve status information, using the clear comm error function
       success = ClearCommError(fileHandle, &errors, &status);
@@ -154,8 +159,8 @@ unsigned int Slay2Win32::getRxCount(void)
 
 int Slay2Win32::receive(unsigned char * buffer, unsigned int size)
 {
-   unsigned int rd = 0;
-   if (fileHandle != NULL)
+   unsigned long rd = 0;
+   if (fileHandle != INVALID_HANDLE_VALUE)
    {
       ReadFile(fileHandle, buffer, size, &rd, NULL);
    }
@@ -165,7 +170,7 @@ int Slay2Win32::receive(unsigned char * buffer, unsigned int size)
 
 void Slay2Win32::flush(void)
 {
-   if (fileHandle != NULL)
+   if (fileHandle != INVALID_HANDLE_VALUE)
    {
       PurgeComm(fileHandle, PURGE_TXCLEAR | PURGE_RXCLEAR);
    }

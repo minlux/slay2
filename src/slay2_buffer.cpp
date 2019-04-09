@@ -261,14 +261,17 @@ unsigned char Slay2DataDecodingBuffer::decodeData(const unsigned char * buffer, 
 
 Slay2Fifo::Slay2Fifo()
 {
-   read = 0;
-   write = 0;
-   count = 0;
+   flush();
 }
 
 unsigned int Slay2Fifo::getCount()
 {
    return count;
+}
+
+unsigned int Slay2Fifo::getSpace()
+{
+   return (SLAY2_FIFO_SIZE - count);
 }
 
 bool Slay2Fifo::push(unsigned char c)
@@ -301,3 +304,9 @@ int Slay2Fifo::pop()
    return -1;
 }
 
+void Slay2Fifo::flush()
+{
+   read = 0;
+   write = 0;
+   count = 0;
+}

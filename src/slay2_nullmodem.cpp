@@ -20,6 +20,8 @@ using namespace std;
 /* -- Types --------------------------------------------------------------- */
 
 /* -- (Module) Global Variables ------------------------------------------- */
+unsigned int Slay2Nullmodem::time1ms;
+
 
 /* -- Module Global Function Prototypes ----------------------------------- */
 
@@ -40,7 +42,7 @@ void Slay2Nullmodem::shutdown(void)
 
 unsigned int Slay2Nullmodem::getTime1ms(void)
 {
-   return time1ms++;
+   return Slay2Nullmodem::time1ms++;
 }
 
 

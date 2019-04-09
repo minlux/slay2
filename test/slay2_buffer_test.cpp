@@ -9,6 +9,7 @@ int main(int argc, char * argv[])
 {
    Slay2AckEncodingBuffer ackEncoder;
    Slay2AckDecodingBuffer ackDecoder;
+   int i;
 
    cout << "ACK Endoder / Decoder Test" << endl;
    cout << "Initial Ack-Encoder Length: " << ackEncoder.getCount() << endl;
@@ -25,7 +26,7 @@ int main(int argc, char * argv[])
    const unsigned int ackCount = ackEncoder.getCount();
    const unsigned char * ackBuffer = ackEncoder.getBuffer();
    cout << "Encoded Ack Length: " << ackCount << endl;
-   for (int i = 0; i < ackCount; ++i)
+   for (i = 0; i < ackCount; ++i)
    {
       const unsigned char c = *ackBuffer++;
       if (Slay2AckDecodingBuffer::isAck(c))
@@ -67,7 +68,7 @@ int main(int argc, char * argv[])
    const unsigned int dataCount = dataEncoder.getCount();
    const unsigned char * dataBuffer = dataEncoder.getBuffer();
    cout << "Encoded Data Length: " << dataCount << endl;
-   for (int i = 0; i < dataCount; ++i)
+   for (i = 0; i < dataCount; ++i)
    {
       const unsigned char c = *dataBuffer++;
       if (Slay2DataDecodingBuffer::isData(c))

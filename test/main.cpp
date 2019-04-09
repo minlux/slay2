@@ -59,7 +59,7 @@ int main(int argc, char * argv[])
 
 
    //init communiction driver
-   slay2.init("/dev/ttyUSB0");
+   slay2.init();
 
    //open communication channels
    for (int i = 0; i < APP_CH_CNT; ++i)
