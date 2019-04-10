@@ -112,6 +112,17 @@ unsigned int Slay2Win32::getTime1ms(void)
 }
 
 
+void Slay2Win32::enterCritical(void)
+{
+   //todo: aquire mutex mit rekursiver ownership
+}
+
+void Slay2Win32::leaveCritical(void)
+{
+   //todo: release mutex mit rekursiver ownership
+}
+
+
 unsigned int Slay2Win32::getTxCount(void)
 {
    if (fileHandle != INVALID_HANDLE_VALUE)

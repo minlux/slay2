@@ -230,6 +230,7 @@ void Slay2::doReception(void)
                         Slay2Receiver receiver = channel->receiver;
                         if (receiver != NULL)
                         {
+//TBD                           dataBuffer[2 + (dataLen - 6)] = 0; //force "zero termination" at the end of RX data (this overwrites one of the CRC bytes!)
                            receiver(channel->receiverObj, &dataBuffer[2], dataLen - 6);
                         }
                      }
@@ -269,7 +270,7 @@ Slay2Channel * Slay2::open(const unsigned int channel)
    {
       if (this->channels[channel] == NULL)
       {
-         Slay2Channel * ch = new Slay2Channel(channel);
+         Slay2Channel * ch = new Slay2Channel(this, channel);
          if (ch != NULL)
          {
             this->channels[channel] = ch;
@@ -299,8 +300,9 @@ void Slay2::close(Slay2Channel * const ch)
 
 
 
-Slay2Channel::Slay2Channel(const unsigned int channel)
+Slay2Channel::Slay2Channel(Slay2 * const slay2, const unsigned int channel)
 {
+   this->slay2 = slay2;
    this->channel = channel;
    this->receiver = NULL;
    this->receiverObj = NULL;
@@ -321,6 +323,7 @@ int Slay2Channel::send(const unsigned char * data, const unsigned int len, const
    bool success;
 
    //push data into txFifo
+   enterCritical();
    for (count = 0; count < len; ++count)
    {
       success = txFifo.push(*data);
@@ -333,6 +336,7 @@ int Slay2Channel::send(const unsigned char * data, const unsigned int len, const
    }
    //set more (data will follow) flag
    this->txMore = more;
+   leaveCritical();
    return (int)count;
 }
 
@@ -349,5 +353,19 @@ unsigned int Slay2Channel::getTxBufferSpace()
 
 void Slay2Channel::flushTxBuffer()
 {
+   enterCritical();
    txFifo.flush();
+   leaveCritical();
 }
+
+
+void Slay2Channel::enterCritical()
+{
+   slay2->enterCritical();
+}
+
+void Slay2Channel::leaveCritical()
+{
+   slay2->leaveCritical();
+}
+

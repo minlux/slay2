@@ -21,6 +21,9 @@ public:
 
    unsigned int getTime1ms(void);
 
+   void enterCritical(void);
+   void leaveCritical(void);
+
 protected: //only for testing purpose, the following functions shall be public
    unsigned int getTxCount(void);
    int transmit(const unsigned char * data, unsigned int len);

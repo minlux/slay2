@@ -35,6 +35,9 @@ public:
 
    //this function must be implemented (in a derived class)
    virtual unsigned int getTime1ms(void) = 0; //public utility function. probably others can utilize it too
+   //synchronization primitives. must have recursive ownership feature. must be implemented in a derived class
+   virtual void enterCritical(void) = 0;
+   virtual void leaveCritical(void) = 0;
 
 protected:
    //this functions must be implemented (in a derived class) to connect to a hardware/plattform...
@@ -70,11 +73,14 @@ public:
    unsigned int getTxBufferSize();
    unsigned int getTxBufferSpace();
    void flushTxBuffer();
-
+   //synchronization primitives
+   void enterCritical();
+   void leaveCritical();
 
 private:
    //private constructor to prevent user from dynamic creaton of Slay2Channel objects (Slay2.open shall be used therefore)
-   Slay2Channel(const unsigned int channel);
+   Slay2Channel(Slay2 * const slay2, const unsigned int channel);
+   Slay2 * slay2;
    unsigned int channel;
    Slay2Receiver receiver;
    void * receiverObj;

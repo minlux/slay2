@@ -90,6 +90,17 @@ unsigned int Slay2Linux::getTime1ms(void)
 }
 
 
+void Slay2Linux::enterCritical(void)
+{
+   //todo: aquire mutex mit rekursiver ownership
+}
+
+void Slay2Linux::leaveCritical(void)
+{
+   //todo: release mutex mit rekursiver ownership
+}
+
+
 unsigned int Slay2Linux::getTxCount(void)
 {
    unsigned int count = 0;
