@@ -2,12 +2,15 @@
 /*!
    \file
    \brief Serial Layer 2 Protocol. Win32 implementation.
+
+   Requires POSIX threads to be linkes (Linker option: -lpthread)
 */
 //---------------------------------------------------------------------------------------------------------------------
 #ifndef SLAY2_WIN32_H
 #define SLAY2_WIN32_H
 
 /* -- Includes ------------------------------------------------------------ */
+#include <windows.h>
 #include "slay2.h"
 
 /* -- Defines ------------------------------------------------------------- */
@@ -36,6 +39,7 @@ private:
    void flush(void);
 
    void * fileHandle;
+   CRITICAL_SECTION critical;
 };
 
 

@@ -33,7 +33,14 @@
 Slay2Linux::Slay2Linux()
 {
    fileDesc = -1;
+
+   //initialize a recursive mutex for critical section handling
+   pthread_mutexattr_t mutexAttr;
+   pthread_mutexattr_init(&mutexAttr);
+   pthread_mutexattr_settype(&mutexAttr, PTHREAD_MUTEX_RECURSIVE);
+   pthread_mutex_init(&mutex, &mutexAttr);
 }
+
 
 Slay2Linux::~Slay2Linux()
 {
@@ -92,12 +99,12 @@ unsigned int Slay2Linux::getTime1ms(void)
 
 void Slay2Linux::enterCritical(void)
 {
-   //todo: aquire mutex mit rekursiver ownership
+   pthread_mutex_lock(&mutex);
 }
 
 void Slay2Linux::leaveCritical(void)
 {
-   //todo: release mutex mit rekursiver ownership
+   pthread_mutex_unlock(&mutex);
 }
 
 

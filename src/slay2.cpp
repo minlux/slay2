@@ -126,6 +126,7 @@ Slay2::~Slay2()
 
 void Slay2::task(void)
 {
+   enterCritical();
    //on startup
    if (syncSent == false)
    {
@@ -142,6 +143,7 @@ void Slay2::task(void)
    }
    doReception();
    doTransmission();
+   leaveCritical();
 }
 
 

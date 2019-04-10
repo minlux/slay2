@@ -29,6 +29,7 @@
 Slay2Win32::Slay2Win32()
 {
    fileHandle = INVALID_HANDLE_VALUE;
+   InitializeCriticalSection(&critical); //init critical section for thread synchronization
 }
 
 Slay2Win32::~Slay2Win32()
@@ -114,12 +115,12 @@ unsigned int Slay2Win32::getTime1ms(void)
 
 void Slay2Win32::enterCritical(void)
 {
-   //todo: aquire mutex mit rekursiver ownership
+   EnterCriticalSection(&critical);
 }
 
 void Slay2Win32::leaveCritical(void)
 {
-   //todo: release mutex mit rekursiver ownership
+   LeaveCriticalSection(&critical);
 }
 
 

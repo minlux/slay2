@@ -48,12 +48,12 @@ unsigned int Slay2Nullmodem::getTime1ms(void)
 
 void Slay2Nullmodem::enterCritical(void)
 {
-   //dummy: do nothing!
+   //not implemented!
 }
 
 void Slay2Nullmodem::leaveCritical(void)
 {
-   //dummy: do nothing!
+   //not implemented!
 }
 
 

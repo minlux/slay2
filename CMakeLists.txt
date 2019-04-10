@@ -27,6 +27,7 @@ add_executable(slay2_linux_test
    src/slay2.cpp
    src/slay2_linux.cpp
 )
+target_link_libraries(slay2_linux_test pthread)
 
 add_executable(slay2_win32_test
    test/slay2_win32_test.cpp

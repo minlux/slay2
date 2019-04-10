@@ -8,6 +8,7 @@
 #define SLAY2_LINUX_H
 
 /* -- Includes ------------------------------------------------------------ */
+#include <pthread.h>
 #include "slay2.h"
 
 /* -- Defines ------------------------------------------------------------- */
@@ -26,7 +27,7 @@ public:
    void enterCritical(void);
    void leaveCritical(void);
 
-protected: //normally protected. for testing purpose, these functions may be made public
+// protected: //normally protected. for testing purpose, these functions may be made public
    unsigned int getTxCount(void);
    int transmit(const unsigned char * data, unsigned int len);
    unsigned int getRxCount(void);
@@ -37,6 +38,7 @@ private:
    void flush(void);
 
    int fileDesc;
+   pthread_mutex_t mutex;
 };
 
 
