@@ -129,6 +129,42 @@ private:
 };
 
 
+//this is a special kind of fifo.
+//it does not implement a circular buffer. it is just a linear buffer!
+//at the beginning, the buffer is empty.
+//when data is pushed to the fifo, the data is copied into the buffer.
+//push can be called successively. in this case the data is appended to the end
+//of the buffered data (if buffer space is left).
+//user can get a reference to start of data, in buffer (and data length).
+//this reference point to a linear data sequence (of the given length).
+//when data is poped from the buffer, the given number of data bytes are
+//removed from the beginning of the data (in the buffer).
+//Dadurch wird der Buffer aber nicht freigegeben. Erst wenn alle Daten
+//aus dem Buffer ausgelesen wurden, wird der Buffer zurueckgesetzt.
+//
+//Dieser Buffer ist also geeignet um "Bursts" abzupuffern. Er muss aber
+//stets schnelle ausgelesen werden, als geschrieben werden, sodass er
+//immer wieder komplett leer werden kann (da ja erst durch das leer werden
+//der belegte Speicher freigegeben wird).
+class Slay2LinearFifo
+{
+public:
+   Slay2LinearFifo();
+   unsigned int getCount(); //get number of data bytes, buffered in fifo
+   unsigned int getSpace(); //get number of bytes left, to be buffered in fifo
+   bool push(const unsigned char * data, unsigned int len); //push new data to the end of the fifo. data will be concatenated. return success or fail
+   unsigned int top(unsigned char ** data); //get reference (and count) to the "oldest" buffered data (in the fifo)
+   bool pop(unsigned int count); //drop away the first N bytes within the buffer. return success or fail
+   void flush(); //clear all data in buffer
+
+private:
+   unsigned char buffer[SLAY2_FIFO_SIZE + 1]; //one extra byte (that is always used for zero termination of data)
+   unsigned int read;
+   unsigned int write;
+   unsigned int count;
+};
+
+
 /* -- Global Variables ---------------------------------------------------- */
 
 /* -- Function Prototypes ------------------------------------------------- */

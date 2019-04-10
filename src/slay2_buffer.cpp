@@ -10,6 +10,7 @@
 //-----------------------------------------------------------------------------
 
 /* -- Includes ------------------------------------------------------------ */
+#include <cstring>
 #include "slay2_buffer.h"
 
 
@@ -310,3 +311,70 @@ void Slay2Fifo::flush()
    write = 0;
    count = 0;
 }
+
+
+
+
+Slay2LinearFifo::Slay2LinearFifo()
+{
+   flush();
+}
+
+unsigned int Slay2LinearFifo::getCount()
+{
+   return count;
+}
+
+unsigned int Slay2LinearFifo::getSpace()
+{
+   return (SLAY2_FIFO_SIZE - write);
+
+}
+
+bool Slay2LinearFifo::push(const unsigned char * data, unsigned int len)
+{
+   const unsigned int freeSpace = (SLAY2_FIFO_SIZE - write);
+   if (len <= freeSpace)
+   {
+      std::memcpy(&buffer[write], data, len);
+      count += len;
+      write += len;
+      buffer[write] = 0; //ensure zero termination of data (don't worry: i have reserved one more space in buffer for that!)
+      return true;
+   }
+   return false;
+}
+
+unsigned int Slay2LinearFifo::top(unsigned char ** data)
+{
+   *data = &buffer[read];
+   return count;
+}
+
+bool Slay2LinearFifo::pop(unsigned int count)
+{
+   //pop all buffered data?
+   if (count == this->count)
+   {
+      flush();
+      return true;
+   }
+   //pop partial
+   if (count < this->count)
+   {
+      read += count;
+      this->count -= count;
+      return true;
+   }
+   //can't pop more data than available
+   return false;
+}
+
+void Slay2LinearFifo::flush()
+{
+   read = 0;
+   write = 0;
+   count = 0;
+   buffer[0] = 0; //zero termination of data
+}
+
