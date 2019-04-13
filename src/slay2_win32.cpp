@@ -35,6 +35,7 @@ Slay2Win32::Slay2Win32()
 Slay2Win32::~Slay2Win32()
 {
    shutdown();
+   DeleteCriticalSection(&critical);
 }
 
 

@@ -146,19 +146,81 @@ private:
 //stets schnelle ausgelesen werden, als geschrieben werden, sodass er
 //immer wieder komplett leer werden kann (da ja erst durch das leer werden
 //der belegte Speicher freigegeben wird).
+template<int N>
 class Slay2LinearFifo
 {
 public:
-   Slay2LinearFifo();
-   unsigned int getCount(); //get number of data bytes, buffered in fifo
-   unsigned int getSpace(); //get number of bytes left, to be buffered in fifo
-   bool push(const unsigned char * data, unsigned int len); //push new data to the end of the fifo. data will be concatenated. return success or fail
-   unsigned int top(unsigned char ** data); //get reference (and count) to the "oldest" buffered data (in the fifo)
-   bool pop(unsigned int count); //drop away the first N bytes within the buffer. return success or fail
-   void flush(); //clear all data in buffer
+   Slay2LinearFifo()
+   {
+      flush();
+   }
+
+   //get number of data bytes, buffered in fifo
+   unsigned int getCount()
+   {
+      return count;
+   }
+
+   //get number of bytes left, to be buffered in fifo
+   unsigned int getSpace()
+   {
+      return (N - write);
+   }
+
+   //push new data to the end of the fifo. data will be concatenated. return success or fail
+   bool push(const unsigned char * data, unsigned int len)
+   {
+      const unsigned int freeSpace = (N - write);
+      if (len <= freeSpace)
+      {
+         memcpy(&buffer[write], data, len);
+         count += len;
+         write += len;
+         buffer[write] = 0; //ensure zero termination of data (don't worry: i have reserved one more space in buffer for that!)
+         return true;
+      }
+      return false;
+   }
+
+   //get reference (and count) to the "oldest" buffered data (in the fifo)
+   unsigned int top(unsigned char ** data)
+   {
+      *data = &buffer[read];
+      return count;
+   }
+
+   //drop away the first N bytes within the buffer. return success or fail
+   bool pop(unsigned int count)
+   {
+      //pop all buffered data?
+      if (count == this->count)
+      {
+         flush();
+         return true;
+      }
+      //pop partial
+      if (count < this->count)
+      {
+         read += count;
+         this->count -= count;
+         return true;
+      }
+      //can't pop more data than available
+      return false;
+   }
+
+   //clear all data in buffer
+   void flush()
+   {
+      read = 0;
+      write = 0;
+      count = 0;
+      buffer[0] = 0; //zero termination of data
+   }
+
 
 private:
-   unsigned char buffer[SLAY2_FIFO_SIZE + 1]; //one extra byte (that is always used for zero termination of data)
+   unsigned char buffer[N + 1]; //one extra byte (that is always used for zero termination of data)
    unsigned int read;
    unsigned int write;
    unsigned int count;
@@ -170,7 +232,6 @@ private:
 /* -- Function Prototypes ------------------------------------------------- */
 
 /* -- Implementation ------------------------------------------------------ */
-
 
 
 #endif

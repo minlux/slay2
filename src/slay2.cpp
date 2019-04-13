@@ -232,7 +232,9 @@ void Slay2::doReception(void)
                         Slay2Receiver receiver = channel->receiver;
                         if (receiver != NULL)
                         {
-//TBD                           dataBuffer[2 + (dataLen - 6)] = 0; //force "zero termination" at the end of RX data (this overwrites one of the CRC bytes!)
+                           //force "zero termination" at the end of RX data (this overwrites one of the CRC bytes!)
+                           ((unsigned char *)dataBuffer)[2 + (dataLen - 6)] = 0;
+                           //callback to application
                            receiver(channel->receiverObj, &dataBuffer[2], dataLen - 6);
                         }
                      }

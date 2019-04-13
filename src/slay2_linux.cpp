@@ -44,6 +44,7 @@ Slay2Linux::Slay2Linux()
 
 Slay2Linux::~Slay2Linux()
 {
+   pthread_mutex_destroy(&mutex);
    shutdown();
 }
 
