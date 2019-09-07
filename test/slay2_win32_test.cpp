@@ -33,7 +33,7 @@ int main(int argc, char * argv[])
    cout << "Testing Windows COM port driver." << endl;
 
    //initialization
-   status = comPort.init(comPortName);
+   status = comPort.init(comPortName, 115200uL);
    cout << "Initializing " << comPortName << " returned " << status << endl;
    if (status == false)
    {

@@ -37,7 +37,7 @@ int main(int argc, char * argv[])
    cout << "Testing Linux TTY device driver." << endl;
 
    //initialization
-   status = tty.init(devName);
+   status = tty.init(devName, 115200uL);
    cout << "Initializing " << devName << " returned " << status << endl;
    if (status == false)
    {
