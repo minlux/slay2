@@ -21,7 +21,7 @@ class Slay2Win32 : public Slay2
 public:
    Slay2Win32();
    ~Slay2Win32();
-   bool init(const char * serPortName);
+   bool init(const char * serPortName, const unsigned int baudrate); //for baudrates slower than 115k2 the "SLAY2_TRANSMISSION_TIMEOUT" value must probably be adjusted (via global preprocessor define!!!)
    void shutdown(void);
 
    unsigned int getTime1ms(void);

@@ -19,7 +19,7 @@ class Slay2Linux : public Slay2
 public:
    Slay2Linux();
    ~Slay2Linux();
-   bool init(const char * dev);
+   bool init(const char * dev, const unsigned int baudrate); //for baudrates slower than 115k2 the "SLAY2_TRANSMISSION_TIMEOUT" value must probably be adjusted (via global preprocessor define!!!)
    void shutdown(void);
 
    unsigned int getTime1ms(void);
@@ -34,7 +34,8 @@ public:
    int receive(unsigned char * buffer, unsigned int size);
 
 private:
-   int setInterfaceAttribs(int speed);
+   int setInterfaceAttribs(unsigned int baudrate);
+   unsigned int encodeBaudrate(unsigned int baudrate);
    void flush(void);
 
    int fileDesc;

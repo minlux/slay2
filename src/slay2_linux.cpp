@@ -49,12 +49,12 @@ Slay2Linux::~Slay2Linux()
 }
 
 
-bool Slay2Linux::init(const char * dev)
+bool Slay2Linux::init(const char * dev, const unsigned int baudrate)
 {
    fileDesc = ::open(dev, O_RDWR | O_NOCTTY); //using "::open" to "say" that the global "open" function is meant, not the "open" method of this class.
    if (fileDesc >= 0)
    {
-      setInterfaceAttribs(B115200); //configure interface
+      setInterfaceAttribs(baudrate); //configure interface
       flush(); //drop all data in input and output buffer
       return true;
    }
@@ -154,7 +154,7 @@ int Slay2Linux::receive(unsigned char * buffer, unsigned int size)
 
 
 //See: https://www.gnu.org/software/libc/manual/html_node/Terminal-Modes.html#Terminal-Modes
-int Slay2Linux::setInterfaceAttribs(int speed)
+int Slay2Linux::setInterfaceAttribs(unsigned int baudrate)
 {
    const int fd = this->fileDesc;
    struct termios tty = { 0 }; //for forwared compatibility: initialize all member to 0 (just to be sure, everything has a defined value)
@@ -240,6 +240,7 @@ int Slay2Linux::setInterfaceAttribs(int speed)
    tty.c_cc[VTIME] = 0;   //wait 0*100ms -> do not wait -> non-blocking read
 
    //adjust baudrate
+   int speed = (int)encodeBaudrate(baudrate);
    cfsetspeed (&tty, speed); //set input and output speed to same baudrate
 
    //write back the modified  settings
@@ -249,6 +250,25 @@ int Slay2Linux::setInterfaceAttribs(int speed)
    }
    return 0;
 }
+
+
+//currently there is only a subset of baudrates supported!
+unsigned int Slay2Linux::encodeBaudrate(unsigned int baudrate)
+{
+   switch (baudrate)
+   {
+      case 2400:   return B2400;
+      case 4800:   return B4800;
+      case 9600:   return B9600;
+      case 19200:  return B19200;
+      case 38400:  return B38400;
+      case 57600:  return B57600;
+      case 115200: return B115200;
+      default:     break;
+   }
+   return B0; //hang up
+}
+
 
 
 void Slay2Linux::flush(void)

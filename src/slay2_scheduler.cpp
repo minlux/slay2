@@ -16,6 +16,13 @@
 /* -- Defines ------------------------------------------------------------- */
 // using namespace std;
 
+#ifndef SLAY2_TRANSMISSION_TIMEOUT
+ #define SLAY2_TRANSMISSION_TIMEOUT     (60)   //set default transmission timeout:
+                                                //transmission of 300 bytes (max length of a data frame) takes ~27ms at 115k, 8N1
+                                                //timeout is 27ms for transmission
+                                                //         + 27ms for to complete a ongoing transmission on the "reply channel"
+                                                //         +  6ms generous timeout for the reply of the ACK frame
+#endif
 
 /* -- Types --------------------------------------------------------------- */
 
@@ -81,7 +88,7 @@ Slay2Buffer * Slay2TxScheduler::getNextXfer(const unsigned int time1ms,
          //      << (unsigned int)Slay2DataDecodingBuffer::decodeData(next->getBuffer(), 0)
          //      << endl;
          dataFifoTimeout[0][0] = time1ms; //store timestamp of new transmission
-         dataFifoTimeout[0][1] =  60; //set transmission timeout: transmission of 300 bytes (max length of a data frame) takes ~27ms at 115k, 8N1
+         dataFifoTimeout[0][1] = SLAY2_TRANSMISSION_TIMEOUT; //set transmission timeout: transmission of 300 bytes (max length of a data frame) takes ~27ms at 115k, 8N1
                                             //timeout is 27ms for transmission
                                             //         + 27ms for to complete a ongoing transmission on the "reply channel"
                                             //         +  6ms generous timeout for the reply of the ACK frame

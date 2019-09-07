@@ -39,7 +39,7 @@ Slay2Win32::~Slay2Win32()
 }
 
 
-bool Slay2Win32::init(const char * serPortName)
+bool Slay2Win32::init(const char * serPortName, const unsigned int baudrate)
 {
    //open serial COM port
    fileHandle = CreateFile(
@@ -61,7 +61,7 @@ bool Slay2Win32::init(const char * serPortName)
       //get current settings
       GetCommState(fileHandle, &dcbSerialParams);
       //adjust settings
-      dcbSerialParams.BaudRate = CBR_115200;
+      dcbSerialParams.BaudRate = baudrate;
       dcbSerialParams.ByteSize = 8;
       dcbSerialParams.StopBits = ONESTOPBIT;
       dcbSerialParams.Parity   = NOPARITY;
