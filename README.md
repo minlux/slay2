@@ -9,6 +9,7 @@ retransmitted.
 *slay2* offers up to 256 logical communication channels. The lower the channel number, the higher the transfer
 priority.
 
+![Nullmodem](doc/nullmodem.jpg)
 
 ## Concept
 The protocol driver is realized as virtual C++ class **Slay2**. For target adaption, user must derive from this
@@ -74,7 +75,7 @@ static void anotherOSerialReceive(void * const obj, const unsigned char * const 
 int main(int argc, char * argv[])
 {
    //optional - if the target adaption requires an initialization....
-   slay2.init("/dev/ttyUSB0");      //this is a Slay2Linux specific method to initialize the tty device
+   slay2.init("/dev/ttyUSB0", 115200);      //this is a Slay2Linux specific method to initialize the tty device
 
    //open the communication channel 0, and set receive callback (used by channel 0 and 1, with parameter)
    slay2ch[0] = slay2.open(0);
